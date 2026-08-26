@@ -10,6 +10,7 @@ import ProfilePage from './pages/ProfilePage';
 import AuthPage from './pages/AuthPage';
 import { supabase } from './supabaseClient';
 import { useSupabaseData } from './hooks/useSupabaseData';
+import PwaInstallBanner from './components/PwaInstallBanner';
 
 export default function App() {
   const [session, setSession] = useState(null);
@@ -236,6 +237,9 @@ export default function App() {
           );
         })}
       </nav>
+
+      {/* ═══ PWA INSTALL BANNER ═══ */}
+      <PwaInstallBanner />
     </div>
   );
 }
