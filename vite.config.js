@@ -15,7 +15,7 @@ export default defineConfig({
         description: 'SSC & Bank Exam Preparation Tracker',
         theme_color: '#10b981',
         background_color: '#ffffff',
-        display: 'standalone',
+        display: 'fullscreen',
         start_url: '/',
         icons: [
           {
