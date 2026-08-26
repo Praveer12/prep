@@ -1909,3 +1909,95 @@ img { max-width: 100%; display: block; }
 .mb-24 { margin-bottom: 24px; }
 .text-center { text-align: center; }
 .flex-center { display: flex; align-items: center; justify-content: center; }
+
+/* ═══════════════════════════════════════════
+   INSTALL PROMPT BANNER (Custom User Component)
+   ═══════════════════════════════════════════ */
+.install-prompt-banner {
+  position: fixed;
+  bottom: 80px;
+  left: 12px;
+  right: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 16px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 9999;
+  border: 1px solid rgba(0,0,0,0.05);
+  animation: slideUp 0.3s ease-out;
+}
+
+.install-prompt-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.install-prompt-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--green-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.install-prompt-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.install-prompt-title {
+  margin: 0;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text-primary);
+}
+
+.install-prompt-desc {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.install-prompt-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.install-prompt-btn {
+  background: var(--green-500);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.install-prompt-close {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  cursor: pointer;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

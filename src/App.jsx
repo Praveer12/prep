@@ -10,7 +10,7 @@ import ProfilePage from './pages/ProfilePage';
 import AuthPage from './pages/AuthPage';
 import { supabase } from './supabaseClient';
 import { useSupabaseData } from './hooks/useSupabaseData';
-import PwaInstallBanner from './components/PwaInstallBanner';
+import InstallPrompt from './components/InstallPrompt';
 
 export default function App() {
   const [session, setSession] = useState(null);
@@ -140,14 +140,22 @@ export default function App() {
   ];
 
   if (!session) {
-    return <AuthPage />;
+    return (
+      <>
+        <AuthPage />
+        <InstallPrompt />
+      </>
+    );
   }
 
   if (isLoading) {
     return (
-      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--green-500)' }}>
-        Loading your data...
-      </div>
+      <>
+        <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--green-500)' }}>
+          Loading your data...
+        </div>
+        <InstallPrompt />
+      </>
     );
   }
 
@@ -237,9 +245,9 @@ export default function App() {
           );
         })}
       </nav>
-
+      
       {/* ═══ PWA INSTALL BANNER ═══ */}
-      <PwaInstallBanner />
+      <InstallPrompt />
     </div>
   );
 }
