@@ -9,6 +9,7 @@ import ToolsPage from './pages/ToolsPage';
 import ProfilePage from './pages/ProfilePage';
 import AuthPage from './pages/AuthPage';
 import { supabase } from './supabaseClient';
+import { useSupabaseData } from './hooks/useSupabaseData';
 
 export default function App() {
   const [session, setSession] = useState(null);
@@ -28,22 +29,25 @@ export default function App() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // ═══ PERSISTENT STATE ═══
-  const [examType, setExamType] = useLocalStorage('examType', 'ssc');
-  const [tasks, setTasks] = useLocalStorage('tasks', []);
-  const [completedTopicsMap, setCompletedTopicsMap] = useLocalStorage('completedTopics', {});
-  const [deadline, setDeadline] = useLocalStorage('syllabusDeadline', '');
-  const [habits, setHabits] = useLocalStorage('customHabits', defaultHabits);
-  const [habitLog, setHabitLog] = useLocalStorage('habitLog', {});
-  const [questions, setQuestions] = useLocalStorage('savedQuestions', []);
-  const [notes, setNotes] = useLocalStorage('notes', []);
-  const [examDate, setExamDate] = useLocalStorage('examDate', '');
-  const [firstActiveDate, setFirstActiveDate] = useLocalStorage('firstActiveDate', '');
-  const [lastActiveDate, setLastActiveDate] = useLocalStorage('lastActiveDate', '');
-  const [streak, setStreak] = useLocalStorage('streak', 0);
-  const [activityLog, setActivityLog] = useLocalStorage('activityLog', []);
-  const [profilePic, setProfilePic] = useLocalStorage('profilePic', null);
-  const [userName, setUserName] = useLocalStorage('userName', 'Aspirant');
+  // ═══ PERSISTENT STATE (Supabase Sync) ═══
+  const {
+    isLoading,
+    examType, setExamType,
+    tasks, setTasks,
+    completedTopicsMap, setCompletedTopicsMap,
+    deadline, setDeadline,
+    habits, setHabits,
+    habitLog, setHabitLog,
+    questions, setQuestions,
+    notes, setNotes,
+    examDate, setExamDate,
+    firstActiveDate, setFirstActiveDate,
+    lastActiveDate, setLastActiveDate,
+    streak, setStreak,
+    activityLog, setActivityLog,
+    profilePic, setProfilePic,
+    userName, setUserName
+  } = useSupabaseData(session);
 
   // ═══ ACTIVITY TRACKER ═══
   const addActivity = (type, description) => {
@@ -136,6 +140,14 @@ export default function App() {
 
   if (!session) {
     return <AuthPage />;
+  }
+
+  if (isLoading) {
+    return (
+      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--green-500)' }}>
+        Loading your data...
+      </div>
+    );
   }
 
   return (
