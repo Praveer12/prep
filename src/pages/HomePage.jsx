@@ -101,12 +101,13 @@ export default function HomePage({
     <div className="page-content page-enter" style={{ paddingBottom: '90px' }}>
       
       {/* ═══ HEADER ═══ */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+      <div style={{ marginBottom: '24px' }}>
+        {/* Top Row: Avatar + Greeting */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
           {profilePic && (
-            <img src={profilePic} alt="Profile" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--green-500)' }} />
+            <img src={profilePic} alt="Profile" style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--green-500)', flexShrink: 0 }} />
           )}
-          <div>
+          <div style={{ flex: 1 }}>
             <div style={{ fontSize: '14px', color: 'var(--text-secondary)', fontWeight: 500 }}>
               {greeting} 🌙
             </div>
@@ -115,7 +116,11 @@ export default function HomePage({
             </div>
           </div>
         </div>
+        {/* Bottom Row: Date + Activity */}
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <div className="glass-card" style={{ padding: '6px 12px', borderRadius: 'var(--radius-full)', fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)' }}>
+            {dateStr}
+          </div>
           <button 
             className="glass-card flex-center" 
             style={{ padding: '6px 12px', borderRadius: 'var(--radius-full)', color: 'var(--text-secondary)', gap: '6px', fontSize: '13px', fontWeight: 600 }}
@@ -123,9 +128,6 @@ export default function HomePage({
           >
             Activity <ChevronRight size={14} />
           </button>
-          <div className="glass-card" style={{ padding: '6px 12px', borderRadius: 'var(--radius-full)', fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)' }}>
-            {dateStr}
-          </div>
         </div>
       </div>
 

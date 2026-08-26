@@ -1,5 +1,7 @@
 import { useState, useRef } from 'react';
 import { sscSyllabus, bankSyllabus } from '../data/syllabusData';
+import { supabase } from '../supabaseClient';
+import { LogOut } from 'lucide-react';
 
 export default function ProfilePage({ 
   examType, setExamType, 
@@ -251,6 +253,27 @@ export default function ProfilePage({
       </div>
 
       <div style={{ height: '20px' }} />
+
+      {/* Logout Button */}
+      <button 
+        onClick={async () => {
+          await supabase.auth.signOut();
+        }}
+        className="glass-card flex-center"
+        style={{ 
+          width: '100%', 
+          padding: '14px', 
+          color: '#ff4d4f', 
+          gap: '8px', 
+          fontSize: '15px', 
+          fontWeight: 600, 
+          marginBottom: '20px',
+          border: '1px solid rgba(255, 77, 79, 0.2)',
+          background: 'rgba(255, 77, 79, 0.05)'
+        }}
+      >
+        <LogOut size={18} /> Sign Out
+      </button>
 
       {/* Reset Confirmation Modal */}
       {showReset && (
