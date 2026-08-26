@@ -13,9 +13,9 @@ export default defineConfig({
         name: 'Prep App',
         short_name: 'Prep App',
         description: 'SSC & Bank Exam Preparation Tracker',
-        theme_color: '#f0f5f2',
-        background_color: '#f0f5f2',
-        display: 'fullscreen',
+        theme_color: '#ffffff',
+        background_color: '#ffffff',
+        display: 'standalone',
         start_url: '/',
         icons: [
           {
