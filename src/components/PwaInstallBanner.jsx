@@ -11,10 +11,7 @@ export default function PwaInstallBanner() {
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches 
       || window.navigator.standalone === true;
     
-    if (isStandalone) {
-      setShowBanner(false);
-      return;
-    }
+    if (isStandalone) return;
 
     // Check if dismissed recently (don't show again for 24 hours)
     const dismissedAt = localStorage.getItem('pwa-banner-dismissed');
@@ -28,28 +25,38 @@ export default function PwaInstallBanner() {
     setIsIos(isIosDevice);
 
     if (isIosDevice) {
-      // On iOS, show banner directly since beforeinstallprompt doesn't exist
       setShowBanner(true);
       return;
     }
 
-    // Android / Chrome: listen for beforeinstallprompt
+    // Check if prompt was already captured globally (before React loaded)
+    if (window.deferredPwaPrompt) {
+      setDeferredPrompt(window.deferredPwaPrompt);
+      setShowBanner(true);
+      return;
+    }
+
+    // Also listen for future events (in case it fires after mount)
     const handler = (e) => {
       e.preventDefault();
+      window.deferredPwaPrompt = e;
       setDeferredPrompt(e);
       setShowBanner(true);
     };
 
     window.addEventListener('beforeinstallprompt', handler);
 
-    // Fallback: if beforeinstallprompt doesn't fire within 3 seconds on a supported browser, show banner anyway
+    // Fallback for mobile browsers: show banner after 2 seconds anyway
     const fallbackTimer = setTimeout(() => {
-      const isChromium = /Chrome|Chromium|CriOS/.test(navigator.userAgent);
       const isMobile = /Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      if (isMobile && !isStandalone) {
+      if (isMobile) {
+        // Re-check if prompt arrived during timeout
+        if (window.deferredPwaPrompt) {
+          setDeferredPrompt(window.deferredPwaPrompt);
+        }
         setShowBanner(true);
       }
-    }, 3000);
+    }, 2000);
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handler);
@@ -58,11 +65,17 @@ export default function PwaInstallBanner() {
   }, []);
 
   const handleInstallClick = async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
+    // Try global prompt first, then local state
+    const prompt = deferredPrompt || window.deferredPwaPrompt;
+    if (prompt) {
+      prompt.prompt();
+      const { outcome } = await prompt.userChoice;
+      window.deferredPwaPrompt = null;
       setDeferredPrompt(null);
       setShowBanner(false);
+      if (outcome === 'accepted') {
+        localStorage.setItem('pwa-banner-dismissed', Date.now().toString());
+      }
     }
   };
 
@@ -72,6 +85,8 @@ export default function PwaInstallBanner() {
   };
 
   if (!showBanner) return null;
+
+  const hasPrompt = deferredPrompt || window.deferredPwaPrompt;
 
   return (
     <div style={{
@@ -136,7 +151,6 @@ export default function PwaInstallBanner() {
       </div>
 
       {isIos ? (
-        /* iOS Instructions */
         <div style={{ 
           background: '#f5f5f5', 
           padding: '12px 14px', 
@@ -148,31 +162,31 @@ export default function PwaInstallBanner() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px', fontWeight: 600, color: '#1a1a2e' }}>
             <Share size={14} /> How to install:
           </div>
-          <div>1. Tap the <strong>Share</strong> button <span style={{ fontSize: '16px' }}>⬆</span> at the bottom of Safari</div>
+          <div>1. Tap the <strong>Share</strong> button <span style={{ fontSize: '16px' }}>⬆</span> at the bottom</div>
           <div>2. Scroll down & tap <strong>"Add to Home Screen"</strong></div>
           <div>3. Tap <strong>"Add"</strong> — Done! 🎉</div>
         </div>
       ) : (
-        /* Android / Chrome Install Button */
         <button 
-          onClick={deferredPrompt ? handleInstallClick : handleDismiss}
+          onClick={hasPrompt ? handleInstallClick : undefined}
+          disabled={!hasPrompt}
           style={{
             width: '100%',
-            background: 'var(--green-500)',
+            background: hasPrompt ? 'var(--green-500)' : '#ccc',
             color: 'white',
             border: 'none',
             padding: '12px',
             borderRadius: '12px',
             fontWeight: 700,
             fontSize: '14px',
-            cursor: 'pointer',
+            cursor: hasPrompt ? 'pointer' : 'default',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             gap: '8px'
           }}
         >
-          <Download size={16} /> {deferredPrompt ? 'Install Now' : 'Use browser menu to install'}
+          <Download size={16} /> {hasPrompt ? 'Install Now' : 'Loading...'}
         </button>
       )}
     </div>
