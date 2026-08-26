@@ -15,12 +15,12 @@ export default function InstallPrompt() {
 
     if (standalone) return; // Don't show if already installed
 
-    // Check if dismissed recently (don't nag - show again after 3 days)
-    const dismissedAt = localStorage.getItem('pwa-install-dismissed');
-    if (dismissedAt) {
-      const threeDays = 3 * 24 * 60 * 60 * 1000;
-      if (Date.now() - parseInt(dismissedAt) < threeDays) return;
-    }
+    // Temporarily commenting out the dismiss check for testing
+    // const dismissedAt = localStorage.getItem('pwa-install-dismissed');
+    // if (dismissedAt) {
+    //   const threeDays = 3 * 24 * 60 * 60 * 1000;
+    //   if (Date.now() - parseInt(dismissedAt) < threeDays) return;
+    // }
 
     // Detect iOS
     const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
@@ -32,10 +32,16 @@ export default function InstallPrompt() {
       return () => clearTimeout(timer);
     }
 
-    // Android/Chrome: Listen for beforeinstallprompt
+    // Android/Chrome: Use globally captured prompt or listen for new one
+    if (window.deferredPrompt) {
+      setDeferredPrompt(window.deferredPrompt);
+      setTimeout(() => setShowInstallBanner(true), 1500);
+    }
+
     const handler = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
+      window.deferredPrompt = e;
       // Show install banner after a short delay
       setTimeout(() => setShowInstallBanner(true), 1500);
     };
