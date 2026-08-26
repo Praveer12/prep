@@ -128,7 +128,7 @@ html {
 
 body {
   font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: var(--bg-page);
+  background: #ffffff;
   color: var(--text-primary);
   min-height: 100dvh;
   overflow-x: hidden;
@@ -220,7 +220,7 @@ img { max-width: 100%; display: block; }
   margin: 0 auto;
   width: 100%;
   position: relative;
-  background: var(--bg-primary);
+  background: var(--bg-page);
 }
 
 .page-content {
