@@ -7,9 +7,26 @@ import SyllabusPage from './pages/SyllabusPage';
 import PlannerPage from './pages/PlannerPage';
 import ToolsPage from './pages/ToolsPage';
 import ProfilePage from './pages/ProfilePage';
+import AuthPage from './pages/AuthPage';
+import { supabase } from './supabaseClient';
 
 export default function App() {
+  const [session, setSession] = useState(null);
   const [activePage, setActivePage] = useState('home');
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   // ═══ PERSISTENT STATE ═══
   const [examType, setExamType] = useLocalStorage('examType', 'ssc');
@@ -116,6 +133,10 @@ export default function App() {
     { id: 'tools', label: 'Tools', icon: Wrench },
     { id: 'profile', label: 'Profile', icon: User },
   ];
+
+  if (!session) {
+    return <AuthPage />;
+  }
 
   return (
     <div className="app-container">
