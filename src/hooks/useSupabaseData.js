@@ -74,14 +74,39 @@ export function useSupabaseData(session) {
 
         // Fetch Activity Logs
         const { data: aLogs } = await supabase.from('activity_logs').select('*').eq('user_id', userId).order('timestamp', { ascending: false });
-        if (aLogs) setActivityLogState(aLogs);
+        if (aLogs) {
+          setActivityLogState(aLogs.map(a => ({
+            id: a.id,
+            type: a.type,
+            description: a.description,
+            date: a.date,
+            timestamp: new Date(a.timestamp).getTime()
+          })));
+        }
 
         // Fetch Notes & Questions
         const { data: notesData } = await supabase.from('notes').select('*').eq('user_id', userId);
-        if (notesData) setNotesState(notesData);
+        if (notesData) {
+          setNotesState(notesData.map(n => ({
+            id: n.id,
+            title: n.title,
+            content: n.content,
+            category: 'General', // Not in DB
+            createdAt: n.date,
+            updatedAt: n.date
+          })));
+        }
 
         const { data: qsData } = await supabase.from('saved_questions').select('*').eq('user_id', userId);
-        if (qsData) setQuestionsState(qsData);
+        if (qsData) {
+          setQuestionsState(qsData.map(q => ({
+            id: q.id,
+            text: q.question_text,
+            answer: q.answer_text,
+            category: q.category || 'General',
+            starred: false // Not in DB
+          })));
+        }
 
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -143,14 +168,17 @@ export function useSupabaseData(session) {
   const setTasks = async (val) => {
     const newTasks = typeof val === 'function' ? val(tasks) : val;
     setTasksState(newTasks);
-    // Since we don't know exactly what changed in the array, we can sync it fully or rely on individual operations.
-    // For simplicity, we can delete all and insert, OR we should ideally update App.jsx to not use whole array updates for tasks.
-    // However, App.jsx uses prev => [...prev, new]. 
-    // This is a naive sync: delete all and insert. For production, individual row updates are better.
     if (!session?.user?.id) return;
     await supabase.from('tasks').delete().eq('user_id', session.user.id);
     if (newTasks.length > 0) {
-      const inserts = newTasks.map(t => ({ ...t, user_id: session.user.id }));
+      const inserts = newTasks.map(t => ({ 
+        id: t.id,
+        user_id: session.user.id,
+        title: t.title,
+        priority: t.priority,
+        date: t.date,
+        completed: t.completed
+      }));
       await supabase.from('tasks').insert(inserts);
     }
   };
@@ -161,7 +189,12 @@ export function useSupabaseData(session) {
     if (!session?.user?.id) return;
     await supabase.from('habits').delete().eq('user_id', session.user.id);
     if (newHabits.length > 0) {
-      const inserts = newHabits.map(h => ({ ...h, user_id: session.user.id }));
+      const inserts = newHabits.map(h => ({ 
+        id: h.id,
+        user_id: session.user.id,
+        name: h.name,
+        icon: h.icon
+      }));
       await supabase.from('habits').insert(inserts);
     }
   };
@@ -172,7 +205,13 @@ export function useSupabaseData(session) {
     if (!session?.user?.id) return;
     await supabase.from('saved_questions').delete().eq('user_id', session.user.id);
     if (newVal.length > 0) {
-      const inserts = newVal.map(q => ({ ...q, user_id: session.user.id }));
+      const inserts = newVal.map(q => ({ 
+        id: q.id,
+        user_id: session.user.id,
+        question_text: q.text,
+        answer_text: q.answer,
+        category: q.category
+      }));
       await supabase.from('saved_questions').insert(inserts);
     }
   };
@@ -183,7 +222,13 @@ export function useSupabaseData(session) {
     if (!session?.user?.id) return;
     await supabase.from('notes').delete().eq('user_id', session.user.id);
     if (newVal.length > 0) {
-      const inserts = newVal.map(n => ({ ...n, user_id: session.user.id }));
+      const inserts = newVal.map(n => ({ 
+        id: n.id,
+        user_id: session.user.id,
+        title: n.title,
+        content: n.content,
+        date: n.createdAt
+      }));
       await supabase.from('notes').insert(inserts);
     }
   };
@@ -194,7 +239,14 @@ export function useSupabaseData(session) {
     if (!session?.user?.id) return;
     await supabase.from('activity_logs').delete().eq('user_id', session.user.id);
     if (newVal.length > 0) {
-      const inserts = newVal.map(a => ({ ...a, user_id: session.user.id }));
+      const inserts = newVal.map(a => ({ 
+        id: a.id,
+        user_id: session.user.id,
+        type: a.type,
+        description: a.description,
+        date: a.date,
+        timestamp: new Date(a.timestamp).toISOString()
+      }));
       await supabase.from('activity_logs').insert(inserts);
     }
   };

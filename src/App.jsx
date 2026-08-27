@@ -148,16 +148,16 @@ export default function App() {
     );
   }
 
-  if (isLoading) {
-    return (
-      <>
-        <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--green-500)' }}>
-          Loading your data...
-        </div>
-        <InstallPrompt />
-      </>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <>
+  //       <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--green-500)' }}>
+  //         Loading your data...
+  //       </div>
+  //       <InstallPrompt />
+  //     </>
+  //   );
+  // }
 
   return (
     <div className="app-container">

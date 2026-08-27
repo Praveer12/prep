@@ -26,7 +26,7 @@ export default function PlannerPage({ tasks, setTasks, habits, setHabits, habitL
   const handleAddTask = () => {
     if (!newTask.title.trim()) return;
     const task = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       title: newTask.title.trim(),
       priority: newTask.priority,
       date: selectedDate,

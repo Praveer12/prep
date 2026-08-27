@@ -23,7 +23,7 @@ export default function ToolsPage({ questions, setQuestions, notes, setNotes }) 
   const handleAddQuestion = () => {
     if (!newQuestion.text.trim()) return;
     const q = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       text: newQuestion.text.trim(),
       answer: newQuestion.answer.trim(),
       category: newQuestion.category,
@@ -52,7 +52,7 @@ export default function ToolsPage({ questions, setQuestions, notes, setNotes }) 
   const handleAddNote = () => {
     if (!newNote.title.trim()) return;
     const n = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       title: newNote.title.trim(),
       content: newNote.content.trim(),
       category: newNote.category,
